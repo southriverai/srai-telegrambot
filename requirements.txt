@@ -1,3 +1,2 @@
-requests==2.31.0
 python_telegram_bot~=13.11
-srai-openai>= 0.7.0
+srai-openai>= 0.8.1

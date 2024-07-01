@@ -1,5 +1,4 @@
 import logging
-from abc import ABCMeta
 from typing import Dict
 from uuid import uuid4
 
@@ -27,13 +26,13 @@ class TelegramBot(TelegramBotInterface):
         self.dispatcher: Dispatcher = None  # type: ignore
         self.list_admin_ids = []
         self.dict_text_mode: Dict[str, TextModeBase] = {}
+        self.text_mode_default: TextModeBase = None  # type: ignore
         self.dict_command: Dict[str, CommandBase] = {}
         # Create the Updater and pass it your bot's token.
         # Make sure to set use_context=True to use the new context based callbacks
         # Post version 12 this will no longer be necessary
         self.updater = Updater(self.token, use_context=True)
         self.dispatcher = self.updater.dispatcher  # type: ignore
-        print("dispatcher", self.dispatcher)
         try:
             # on different commands - answer in Telegram
 
@@ -46,18 +45,25 @@ class TelegramBot(TelegramBotInterface):
             self.message_admins(f"Error during startup with image tag {get_image_tag()}: {e}")
             raise e
 
+    def get_dao(self) -> DaoTelegramBot:
+        return self.dao_telegram_bot
+
     def register_admin(self, admin_id: str):
         self.list_admin_ids.append(admin_id)
 
-    def register_text_mode(self, text_mode: TextModeBase):
+    def register_text_mode(self, text_mode: TextModeBase, set_default: bool = False):
         if text_mode.text_mode_name in self.dict_text_mode:
             raise Exception(f"Skill name {text_mode.text_mode_name} already registered")
         self.dict_text_mode[text_mode.text_mode_name] = text_mode
+        text_mode.register(self)
+        if set_default:
+            self.text_mode_default = text_mode
 
     def register_command(self, command: CommandBase):
         if command.command_name in self.dict_command:
             raise Exception(f"Command name {command.command_name} already registered")
         self.dict_command[command.command_name] = command
+        command.register(self)
         self.dispatcher.add_handler(CommandHandler(command.command_name, command.execute_command_callback))
 
     def handle_text(self, update: Update, context: CallbackContext):
@@ -66,11 +72,12 @@ class TelegramBot(TelegramBotInterface):
         chat_id = str(update.message.chat_id)
         author_id = str(update.message.from_user.id)
         author_name = update.message.from_user.username
-        message_content = {"message_content_type": "text", "text": update.message.text}
+        message_content = update.message.to_dict()
         message = ChatMessage(message_id, chat_id, author_id, author_name, message_content)
         self.dao_telegram_bot.save_message(message)
-        # TODO move this to a skill or mode
-        print("handle_text", update.message.text)
+        # TODO also have this catch the bot messages
+        if self.text_mode_default is not None:
+            self.text_mode_default.handle_text(update, context)
 
     def message_admins(self, text: str):
         for admin_id in self.list_admin_ids:

@@ -5,9 +5,8 @@ A library that makes it easier to build ai powered telegram bots
 pip install srai-telegrambot
 
 ## usage
-This is how i use the bot
+This is how i use the bot:
 '''python
-
 from srai_core.store.database_mongo import DatabaseMongo
 from srai_core.tools_env import get_string_from_env
 
@@ -15,6 +14,7 @@ from srai_telegrambot.command.command_chat_id import CommandChatId
 from srai_telegrambot.command.command_help import CommandHelp
 from srai_telegrambot.command.command_image_tag import CommandImageTag
 from srai_telegrambot.dao_telegram_bot import DaoTelegramBot
+from srai_telegrambot.mode.text_mode_gpt import TextModeGpt
 from srai_telegrambot.telegram_bot import TelegramBot
 
 if __name__ == "__main__":
@@ -37,6 +37,7 @@ if __name__ == "__main__":
     bot.register_command(CommandHelp())
     bot.register_command(CommandChatId())
     bot.register_command(CommandImageTag())
+    bot.register_text_mode(TextModeGpt("you are a chatbot"), True)
 
     # start bot
     bot.main()
