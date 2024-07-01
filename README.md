@@ -4,9 +4,16 @@ A library that makes it easier to build ai powered telegram bots
 # install
 pip install srai-telegrambot
 
+## get your token
+get your telegrambot token from the botfather as described here https://core.telegram.org/bots/tutorial
+
 ## usage
 This is how i use the bot:
-'''python
+I rely on mongo db to save messages there are other options!
+You can also implement your own version of dao telegrambot.
+I will add a in-memory database that i use for testing in the near future
+
+```python
 from srai_core.store.database_mongo import DatabaseMongo
 from srai_core.tools_env import get_string_from_env
 
@@ -41,4 +48,6 @@ if __name__ == "__main__":
 
     # start bot
     bot.main()
-'''
+```
+
+## Changelog
