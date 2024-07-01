@@ -1,0 +1,10 @@
+{
+    "list_build_target": [],
+    "list_release_target": [
+        {
+            "__Type__": "CommandHandlerSubprocess",
+            "release_type": "release_code_public"
+        }
+    ],
+    "list_deploy_target": []
+}
