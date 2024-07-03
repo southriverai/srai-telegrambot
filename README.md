@@ -51,3 +51,7 @@ if __name__ == "__main__":
 ```
 
 ## Changelog
+
+0.15.0
+- added in memory database
+- added default release option
