@@ -14,6 +14,7 @@ You can also implement your own version of dao telegrambot.
 I will add a in-memory database that i use for testing in the near future
 
 ```python
+import os
 from srai_core.store.database_mongo import DatabaseMongo
 from srai_core.tools_env import get_string_from_env
 
@@ -22,6 +23,7 @@ from srai_telegrambot.command.command_help import CommandHelp
 from srai_telegrambot.command.command_image_tag import CommandImageTag
 from srai_telegrambot.dao_telegram_bot import DaoTelegramBot
 from srai_telegrambot.mode.text_mode_gpt import TextModeGpt
+from srai_telegrambot.mode.text_mode_rag import TextModeRag
 from srai_telegrambot.telegram_bot import TelegramBot
 
 if __name__ == "__main__":
@@ -44,14 +46,42 @@ if __name__ == "__main__":
     bot.register_command(CommandHelp())
     bot.register_command(CommandChatId())
     bot.register_command(CommandImageTag())
-    bot.register_text_mode(TextModeGpt("you are a chatbot"), True)
+    bot.register_text_mode(TextModeGpt("you are a chatbot"), False)
 
+    path_dir_vectorstore = os.path.abspath(os.path.join("test", "data", "vectorstore"))
+    bot.register_text_mode(TextModeRag(path_dir_vectorstore), True)
     # start bot
     bot.main()
 ```
 
+### How to build a RAG telegram bot vectorstore
+Below is an
+
+```python
+import os
+
+from srai_telegrambot.mode.text_mode_rag import TextModeRag
+from srai_telegrambot.telegram_bot_test import TelegramBotTest
+
+path_dir_vectorstore = os.path.abspath(os.path.join("test", "data", "vectorstore"))
+mode = TextModeRag(path_dir_vectorstore)
+mode.register(TelegramBotTest())
+
+list_path_file = []
+list_path_file.append(os.path.abspath(os.path.join("test", "data", "paper_0.pdf")))
+list_path_file.append(os.path.abspath(os.path.join("test", "data", "paper_1.pdf")))
+list_path_file.append(os.path.abspath(os.path.join("test", "data", "paper_2.pdf")))
+
+for path_file in list_path_file:
+    mode.add_path_file_pdf(path_file)
+mode.rebuild_vectorstore()
+print(mode._handle_text("test_chat", "What is the most important parameter in DCE-CT in stroke?"))
+print(mode._handle_text("test_chat", "Please elaborate?"))
+```
+
+
 ## Changelog
 
-0.15.0
-- added in memory database
-- added default release option
+### 0.16.0
+- Added RAG text mode
+- Moved memory databases to core lib
