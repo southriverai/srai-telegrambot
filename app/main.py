@@ -1,5 +1,3 @@
-import os
-
 from srai_core.store.database_mongo import DatabaseMongo
 from srai_core.tools_env import get_string_from_env
 
@@ -8,7 +6,7 @@ from srai_telegrambot.command.command_help import CommandHelp
 from srai_telegrambot.command.command_image_tag import CommandImageTag
 from srai_telegrambot.dao_telegram_bot import DaoTelegramBot
 from srai_telegrambot.mode.text_mode_gpt import TextModeGpt
-from srai_telegrambot.mode.text_mode_rag import TextModeRag
+from srai_telegrambot.mode.voice_mode_gpt import VoiceModeGpt
 from srai_telegrambot.telegram_bot import TelegramBot
 
 if __name__ == "__main__":
@@ -31,10 +29,8 @@ if __name__ == "__main__":
     bot.register_command(CommandHelp())
     bot.register_command(CommandChatId())
     bot.register_command(CommandImageTag())
-    # bot.register_text_mode(TextModeGpt("you are a chatbot"), True)
-
-    path_dir_vectorstore = os.path.abspath(os.path.join("test", "data", "vectorstore"))
-    bot.register_text_mode(TextModeRag(path_dir_vectorstore), True)
+    bot.register_text_mode(TextModeGpt("You are a chatbot"), True)
+    bot.register_voice_mode(VoiceModeGpt("You are a chatbot. Never respond in more that three sentences"), True)
 
     # start bot
     bot.main()

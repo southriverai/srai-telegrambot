@@ -1,8 +1,0 @@
-python_telegram_bot~=13.11
-srai-openai>= 0.8.1
-srai-core>= 0.12.0
-#langchain==0.2.6
-langchain_community==0.2.6
-langchain-openai==0.1.14
-pypdf==4.2.0 # for PyPDFLoader
-faiss-cpu==1.8.0.post1 # vector store

@@ -6,7 +6,9 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
-from langchain_community.vectorstores import FAISS
+from langchain_community.vectorstores import VectorStore
+
+# from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
 from srai_telegrambot.mode.text_mode_base import TextModeBase
@@ -26,14 +28,16 @@ class TextModeRag(TextModeBase):
 
         # Create vector store
         embeddings = OpenAIEmbeddings()
+        self.vectorstore: VectorStore = None  # type: ignore
         if not os.path.isfile(os.path.join(path_dir_vectorstore, "index.pkl")):
             self.rebuild_vectorstore()
         else:
-            self.vectorstore = FAISS.load_local(
-                path_dir_vectorstore,
-                embeddings=embeddings,
-                allow_dangerous_deserialization=True,
-            )
+            raise Exception("FAISS is not supported in this version of the library")
+            # self.vectorstore = FAISS.load_local(
+            #     path_dir_vectorstore,
+            #     embeddings=embeddings,
+            #     allow_dangerous_deserialization=True,
+            # )
         # Create conversation chain
         self.llm = ChatOpenAI(temperature=0.7, model="gpt-4")
 
@@ -46,8 +50,9 @@ class TextModeRag(TextModeBase):
             loader = TextLoader(file_path=path_file)
             list_page.extend(loader.load_and_split(self.text_splitter))
 
-        self.vectorstore = FAISS.from_documents(list_page, embedding=OpenAIEmbeddings())
-        self.vectorstore.save_local(self.path_dir_vectorstore)
+        # self.vectorstore = FAISS.from_documents(list_page, embedding=OpenAIEmbeddings())
+        # self.vectorstore.save_local(self.path_dir_vectorstore)
+        raise Exception("FAISS is not supported in this version of the library")
 
     def add_path_file_pdf(self, path_file: str):
         self.list_path_file_pdf.append(path_file)
@@ -66,9 +71,12 @@ class TextModeRag(TextModeBase):
         conversation_chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm, chain_type="stuff", retriever=self.vectorstore.as_retriever(), memory=memory
         )
+
         result = conversation_chain.invoke({"question": prompt})
 
         memory_string = base64.b64encode(pkl.dumps(memory)).decode("utf-8")
         mode_state = {"memory_string": memory_string}
         self.save_mode_state(chat_id, mode_state)
+        return result["answer"]
+        return result["answer"]
         return result["answer"]

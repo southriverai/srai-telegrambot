@@ -1,16 +1,34 @@
 FROM python:3.10-alpine
-# copy and install dependencies
-COPY requirements.txt /requirements.txt
-RUN pip install --user -r /requirements.txt
+# install bash
+RUN apk update && apk add --no-cache bash curl
+
+# Copy and install dependencies
+RUN pip install poetry==1.8.3
+
+# Configure Poetry to not create virtual environments
+#RUN poetry config virtualenvs.create false
+
+# Copy the pyproject.toml file and install dependencies
+COPY pyproject.toml /pyproject.toml
+
+# Install only dependancies
+RUN poetry install --no-root
+
+# Poetry wont install without it but also wont fail
+COPY README.md /README.md
+
+# Copy the code
+COPY srai_telegrambot /srai_telegrambot
 
 # install srai_telegrambot module
-COPY srai_telegrambot /srai_telegrambot
-COPY setup.py /setup.py
-COPY setup.cfg /setup.cfg
-COPY README.md /README.md
-RUN pip install --user -e .
+RUN poetry install
 
-# contains config
+# copy the app
 COPY app /app
-WORKDIR /app
-CMD python main.py
+
+# run the app
+#CMD python app/main.py
+# CMD ["python", "app/main.py"]
+CMD ["poetry", "run", "python", "app/main.py"]
+
+#CMD ["poetry", "run", "pip", "list"]
