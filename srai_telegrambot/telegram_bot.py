@@ -14,6 +14,7 @@ from srai_telegrambot.model.chat_message import ChatMessage
 from srai_telegrambot.telegram_bot_interface import TelegramBotInterface
 
 logger = logging.getLogger(__name__)
+from threading import Thread
 
 
 class TelegramBot(TelegramBotInterface):
@@ -31,6 +32,8 @@ class TelegramBot(TelegramBotInterface):
         self.dict_voice_mode: Dict[str, VoiceModeBase] = {}
         self.voice_mode_default: VoiceModeBase = None  # type: ignore
         self.dict_command: Dict[str, CommandBase] = {}
+        self.thread: Thread = Thread(target=self._start)
+        self.is_running = False
         # Create the Updater and pass it your bot's token.
         # Make sure to set use_context=True to use the new context based callbacks
         # Post version 12 this will no longer be necessary
@@ -118,15 +121,21 @@ class TelegramBot(TelegramBotInterface):
         """Log Errors caused by Updates."""
         logger.warning('Update "%s" caused error "%s"', update, context.error)
 
-    def main(self):
+    def start(self):
+        """Start the bot."""
+        self.is_running = True
+        self.thread.start()
+
+    def _start(self):
         """Start the bot."""
 
         self.message_admins(f"Startup succes with image tag {get_image_tag()}")
+        while self.is_running:
 
-        #  Start the Bot
-        self.updater.start_polling()
+            #  Start the Bot
+            self.updater.start_polling()
 
-        # Run the bot until you press Ctrl-C or the process receives SIGINT,
-        # SIGTERM or SIGABRT. This should be used most of the time, since
-        # start_polling() is non-blocking and will stop the bot gracefully.
-        self.updater.idle()
+            # Run the bot until you press Ctrl-C or the process receives SIGINT,
+            # SIGTERM or SIGABRT. This should be used most of the time, since
+            # start_polling() is non-blocking and will stop the bot gracefully.
+            # self.updater.idle()

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "srai-telegrambot"
-version = "0.17.1"
+version = "0.17.2"
 description = "A library that makes it easier to build ai powered telegram bots."
 authors = ["Jaap Oosterbroek <jaap.oosterbroek@gmail.com>"]
 license = "MIT"
@@ -8,7 +8,7 @@ readme = "README.md"
 homepage = "https://github.com/southriverai/srai-telegrambot"
 repository = "https://github.com/southriverai/srai-telegrambot"
 keywords = ["SRAI", "TOOLS"]
-packages = [{ include = "srai_telegrambot" }]
+packages = [{ include = "srai_telegrambot" }] # TODO not sure if this is needed
 
 
 [tool.poetry.dependencies]

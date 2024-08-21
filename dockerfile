@@ -27,8 +27,4 @@ RUN poetry install
 COPY app /app
 
 # run the app
-#CMD python app/main.py
-# CMD ["python", "app/main.py"]
 CMD ["poetry", "run", "python", "app/main.py"]
-
-#CMD ["poetry", "run", "pip", "list"]

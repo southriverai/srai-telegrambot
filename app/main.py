@@ -33,4 +33,4 @@ if __name__ == "__main__":
     bot.register_voice_mode(VoiceModeGpt("You are a chatbot. Never respond in more that three sentences"), True)
 
     # start bot
-    bot.main()
+    bot.start()

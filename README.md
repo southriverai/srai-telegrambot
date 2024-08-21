@@ -122,7 +122,8 @@ print(mode._handle_text("test_chat", "Please elaborate?"))
 
 
 ## Changelog
-
+### 0.17.2
+- Made the bot explicitly threaded so it can run as part of a bigger program
 ### 0.17.0
 - Added voice support
 - Removed inate vectorstore FAISS
